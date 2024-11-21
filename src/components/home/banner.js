@@ -665,6 +665,32 @@ export default function Banner({ onClose }) {
         console.error('Gửi email thất bại:', emailError.response?.data || emailError.message);
         alert(`Thanh toán thành công nhưng gửi email thất bại: ${JSON.stringify(emailError.response?.data || emailError.message)}`);
       }
+      // Đẩy thông tin đặt chỗ nhà hàng
+      try {
+        // Đảm bảo định dạng reservationTime là "HH:mm:ss"
+        const time = currentReservationDetails.time; // Ví dụ: "14:00"
+        const formattedTime = time.includes(':') && time.split(':').length === 2 ? `${time}:00` : time;
+
+        const reservationPayload = {
+          restaurantId: parseInt(currentReservationDetails.restaurant, 10),
+          reservationDate: currentReservationDetails.date,
+          reservationTime: formattedTime,
+        };
+
+        console.log('Reservation Payload:', reservationPayload);
+
+        const reservationResponse = await axios.post(
+          'https://t2305mpk320241031161932.azurewebsites.net/api/Restaurant/reserve',
+          reservationPayload,
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        console.log('Reservation Response:', reservationResponse.data);
+        console.log('Đặt chỗ thành công!');
+      } catch (reservationError) {
+        console.error('Đặt chỗ thất bại:', reservationError.response?.data || reservationError.message);
+        alert(`Thanh toán thành công nhưng đặt chỗ thất bại: ${JSON.stringify(reservationError.response?.data || reservationError.message)}`);
+      }
 
       // alert('Thanh toán thành công!');
       console.log('Thanh toán thành công!');
